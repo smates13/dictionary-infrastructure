@@ -3,3 +3,22 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Dictionary infrastructure
 
 Resources:
+  DictionaryBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: dictionary-bucket
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
