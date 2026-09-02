@@ -6,7 +6,7 @@ Resources:
   DictionaryBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: dictionary-bucket
+      BucketName: dictionary-bucket-862248740116
 
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
