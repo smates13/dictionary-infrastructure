@@ -177,3 +177,16 @@ Resources:
 
       StageName: "$default"
       AutoDeploy: true
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${DictionaryApi}.execute-api.${AWS::Region}.amazonaws.com"
+
+  DictionaryTranslateLambdaArn:
+    Value: !GetAtt DictionaryTranslateLambda.Arn
+
+  DictionaryBucketName:
+    Value: !Ref DictionaryBucket
+
+  DictionaryArtifactsBucketName:
+    Value: !Ref DictionaryArtifactsBucket
