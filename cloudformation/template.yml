@@ -138,3 +138,15 @@ Resources:
     Properties:
       Name: DictionaryApi
       ProtocolType: HTTP
+
+  DictionaryApiIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref DictionaryApi
+
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+
+      IntegrationUri: !GetAtt DictionaryTranslateLambda.Arn
+
+      PayloadFormatVersion: "2.0"
