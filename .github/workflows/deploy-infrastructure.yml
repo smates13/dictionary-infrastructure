@@ -22,4 +22,8 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Deploy infrastructure
-        run: aws cloudformation deploy --template-file cloudformation/template.yml --stack-name ${{ vars.STACK_NAME }}
+        run: |
+          aws cloudformation deploy \
+            --template-file cloudformation/template.yml \
+            --stack-name ${{ vars.STACK_NAME }} \
+            --capabilities CAPABILITY_NAMED_IAM
