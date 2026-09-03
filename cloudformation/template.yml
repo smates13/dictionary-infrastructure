@@ -150,3 +150,12 @@ Resources:
       IntegrationUri: !GetAtt DictionaryTranslateLambda.Arn
 
       PayloadFormatVersion: "2.0"
+
+  DictionaryApiRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref DictionaryApi
+
+      RouteKey: "GET /translate"
+
+      Target: !Sub "integrations/${DictionaryApiIntegration}"
