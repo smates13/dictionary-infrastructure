@@ -132,3 +132,9 @@ Resources:
 
       LoggingConfig:
         LogGroup: !Ref DictionaryTranslateLambdaLogGroup
+
+  DictionaryApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: DictionaryApi
+      ProtocolType: HTTP
