@@ -23,10 +23,10 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
 
-  DictionaryLambdaRole:
+  DictionaryTranslateLambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: DictionaryLambdaRole
+      RoleName: DictionaryTranslateLambdaRole
 
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
