@@ -67,3 +67,9 @@ Resources:
                   - s3:PutObject
                   - s3:DeleteObject
                 Resource: !Sub "${DictionaryBucket.Arn}/*"
+
+  DictionaryTranslateLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/DictionaryTranslateLambda
+      RetentionInDays: 30
