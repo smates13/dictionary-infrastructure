@@ -159,3 +159,13 @@ Resources:
       RouteKey: "GET /translate"
 
       Target: !Sub "integrations/${DictionaryApiIntegration}"
+
+  DictionaryApiPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref DictionaryTranslateLambda
+
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+
+      SourceArn: !Sub "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${DictionaryApi}/*"
