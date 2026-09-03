@@ -23,6 +23,26 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
 
+  DictionaryArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: dictionary-artifacts-862248740116
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
   DictionaryTranslateLambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -50,7 +70,7 @@ Resources:
                   - logs:PutLogEvents
                 Resource: "*"
 
-        - PolicyName: DictionaryS3Access
+        - PolicyName: DictionaryTranslateS3Access
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -67,6 +87,22 @@ Resources:
                   - s3:PutObject
                   - s3:DeleteObject
                 Resource: !Sub "${DictionaryBucket.Arn}/*"
+
+        - PolicyName: DictionaryArtifactsS3Access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ListBucket
+                Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !GetAtt DictionaryArtifactsBucket.Arn
+
+              - Sid: ManageObjects
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub "${DictionaryArtifactsBucket.Arn}/*"
 
   DictionaryTranslateLambdaLogGroup:
     Type: AWS::Logs::LogGroup
