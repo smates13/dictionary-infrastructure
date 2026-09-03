@@ -1,4 +1,4 @@
-name: Deploy infrastructure
+name: Deploy
 
 on:
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
           role-to-assume: arn:aws:iam::862248740116:role/GitHubActionsCloudFormation
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Deploy infrastructure
+      - name: Cloudformation deploy
         run: |
           aws cloudformation deploy \
             --template-file cloudformation/template.yml \
