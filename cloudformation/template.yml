@@ -109,3 +109,26 @@ Resources:
     Properties:
       LogGroupName: /aws/lambda/DictionaryTranslateLambda
       RetentionInDays: 30
+
+  DictionaryTranslateLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: DictionaryTranslateLambda
+
+      Runtime: java21
+      Architectures:
+        - arm64
+
+      Handler: placeholder.Handler::handleRequest
+
+      Role: !GetAtt DictionaryTranslateLambdaRole.Arn
+
+      Code:
+        S3Bucket: dictionary-artifacts-862248740116
+        S3Key: translate/current/code.zip
+
+      MemorySize: 1024
+      Timeout: 30
+
+      LoggingConfig:
+        LogGroup: !Ref DictionaryTranslateLambdaLogGroup
