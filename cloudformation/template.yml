@@ -115,14 +115,12 @@ Resources:
     Properties:
       FunctionName: DictionaryTranslateLambda
 
-      Runtime: java21
-      Architectures:
-        - arm64
-
-      Handler: placeholder.Handler::handleRequest
-
       Role: !GetAtt DictionaryTranslateLambdaRole.Arn
 
+      Runtime: java25
+      Architectures:
+        - arm64
+      Handler: com.subrtm.dictionary.translate.Handler::handleRequest
       Code:
         S3Bucket: dictionary-artifacts-862248740116
         S3Key: translate/current/code.zip
