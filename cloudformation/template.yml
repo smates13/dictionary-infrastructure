@@ -86,7 +86,7 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                   - s3:DeleteObject
-                Resource: !Sub "${DictionaryBucket.Arn}/*"
+                Resource: !Sub ${DictionaryBucket.Arn}/*
 
         - PolicyName: DictionaryArtifactsS3Access
           PolicyDocument:
@@ -102,7 +102,7 @@ Resources:
                 Effect: Allow
                 Action:
                   - s3:GetObject
-                Resource: !Sub "${DictionaryArtifactsBucket.Arn}/*"
+                Resource: !Sub ${DictionaryArtifactsBucket.Arn}/*
 
   DictionaryTranslateLambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -156,7 +156,7 @@ Resources:
 
       RouteKey: "GET /translate"
 
-      Target: !Sub "integrations/${DictionaryApiIntegration}"
+      Target: !Sub integrations/${DictionaryApiIntegration}
 
   DictionaryApiPermission:
     Type: AWS::Lambda::Permission
@@ -166,7 +166,7 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: apigateway.amazonaws.com
 
-      SourceArn: !Sub "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${DictionaryApi}/*"
+      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${DictionaryApi}/*
 
   DictionaryApiStage:
     Type: AWS::ApiGatewayV2::Stage
@@ -176,9 +176,47 @@ Resources:
       StageName: "$default"
       AutoDeploy: true
 
+  GitHubActionsLambdaPublish:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: GitHubActionsLambdaPublish
+
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: arn:aws:iam::862248740116:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: repo:smates13@33930436/dictionary-translate@1356529836:*
+
+      Policies:
+        - PolicyName: LambdaPublish
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: S3Publish
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub ${DictionaryArtifactsBucket.Arn}/translate/*
+
+              - Sid: LambdaUpdate
+                Effect: Allow
+                Action:
+                  - lambda:UpdateFunctionCode
+                  - lambda:GetFunction
+                  - lambda:GetFunctionConfiguration
+                Resource: !GetAtt DictionaryTranslateLambda.Arn
+
 Outputs:
   ApiUrl:
-    Value: !Sub "https://${DictionaryApi}.execute-api.${AWS::Region}.amazonaws.com"
+    Value: !Sub https://${DictionaryApi}.execute-api.${AWS::Region}.amazonaws.com
 
   DictionaryTranslateLambdaArn:
     Value: !GetAtt DictionaryTranslateLambda.Arn
