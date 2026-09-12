@@ -154,7 +154,7 @@ Resources:
     Properties:
       ApiId: !Ref DictionaryApi
 
-      RouteKey: "GET /translate"
+      RouteKey: "GET /api/v1/translate"
 
       Target: !Sub integrations/${DictionaryApiIntegration}
 
@@ -175,6 +175,66 @@ Resources:
 
       StageName: "$default"
       AutoDeploy: true
+
+
+  DictionaryTranslateNativeLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: DictionaryTranslateNativeLambda
+
+      Role: !GetAtt DictionaryTranslateLambdaRole.Arn
+
+      Runtime: provided.al2023
+      Architectures:
+        - arm64
+      Handler: bootstrap
+
+      Code:
+        S3Bucket: dictionary-artifacts-862248740116
+        S3Key: translate/native/current/code.zip
+
+      MemorySize: 1024
+      Timeout: 30
+
+      LoggingConfig:
+        LogGroup: !Ref DictionaryTranslateNativeLambdaLogGroup
+
+  DictionaryApiNativeIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref DictionaryApi
+
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+
+      IntegrationUri: !GetAtt DictionaryTranslateNativeLambda.Arn
+
+      PayloadFormatVersion: "2.0"
+
+  DictionaryApiNativeRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref DictionaryApi
+
+      RouteKey: "GET /api/v2/translate"
+
+      Target: !Sub integrations/${DictionaryApiNativeIntegration}
+
+  DictionaryApiNativePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref DictionaryTranslateNativeLambda
+
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+
+      SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${DictionaryApi}/*
+
+  DictionaryTranslateNativeLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/DictionaryTranslateNativeLambda
+
 
   GitHubActionsLambdaPublish:
     Type: AWS::IAM::Role
