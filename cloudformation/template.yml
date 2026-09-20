@@ -193,7 +193,7 @@ Resources:
         S3Bucket: dictionary-artifacts-862248740116
         S3Key: translate/native/current/code.zip
 
-      MemorySize: 128
+      MemorySize: 256
       Timeout: 30
 
       LoggingConfig:
