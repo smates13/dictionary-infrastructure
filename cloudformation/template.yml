@@ -252,7 +252,10 @@ Resources:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                token.actions.githubusercontent.com:sub: repo:smates13@33930436/dictionary-translate@1356529836:*
+                token.actions.githubusercontent.com:sub: [
+                  "repo:smates13@33930436/dictionary-translate@1356529836:*",
+                  "repo:smates13@33930436/translate-function@1372033164:*"
+                ]
 
       Policies:
         - PolicyName: LambdaPublish
