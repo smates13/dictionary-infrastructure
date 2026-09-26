@@ -199,6 +199,10 @@ Resources:
       LoggingConfig:
         LogGroup: !Ref DictionaryTranslateNativeLambdaLogGroup
 
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref DictionaryBucket
+
   DictionaryApiNativeIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
