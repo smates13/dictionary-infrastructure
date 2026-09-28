@@ -43,10 +43,10 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
 
-  DictionaryTranslateLambdaRole:
+  DictionaryLambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: DictionaryTranslateLambdaRole
+      RoleName: DictionaryLambdaRole
 
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -70,7 +70,7 @@ Resources:
                   - logs:PutLogEvents
                 Resource: "*"
 
-        - PolicyName: DictionaryTranslateS3Access
+        - PolicyName: DictionaryS3Access
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -115,7 +115,7 @@ Resources:
     Properties:
       FunctionName: DictionaryTranslateLambda
 
-      Role: !GetAtt DictionaryTranslateLambdaRole.Arn
+      Role: !GetAtt DictionaryLambdaRole.Arn
 
       Runtime: java25
       Architectures:
@@ -177,12 +177,17 @@ Resources:
       AutoDeploy: true
 
 
+  DictionaryTranslateNativeLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/DictionaryTranslateNativeLambda
+
   DictionaryTranslateNativeLambda:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: DictionaryTranslateNativeLambda
 
-      Role: !GetAtt DictionaryTranslateLambdaRole.Arn
+      Role: !GetAtt DictionaryLambdaRole.Arn
 
       Runtime: provided.al2023
       Architectures:
@@ -234,10 +239,33 @@ Resources:
 
       SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${DictionaryApi}/*
 
-  DictionaryTranslateNativeLambdaLogGroup:
+
+  DictionaryCopyLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /aws/lambda/DictionaryTranslateNativeLambda
+      LogGroupName: /aws/lambda/DictionaryCopyLambdaLogGroup
+
+  DictionaryCopyLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: DictionaryCopyLambda
+
+      Role: !GetAtt DictionaryLambdaRole.Arn
+
+      Runtime: provided.al2023
+      Architectures:
+        - arm64
+      Handler: bootstrap
+
+      Code:
+        S3Bucket: dictionary-artifacts-862248740116
+        S3Key: copy/current/code.zip
+
+      MemorySize: 256
+      Timeout: 30
+
+      LoggingConfig:
+        LogGroup: !Ref DictionaryCopyLambdaLogGroup
 
 
   GitHubActionsLambdaPublish:
@@ -287,6 +315,9 @@ Outputs:
 
   DictionaryTranslateLambdaArn:
     Value: !GetAtt DictionaryTranslateLambda.Arn
+
+  DictionaryTranslateNativeLambdaArn:
+    Value: !GetAtt DictionaryTranslateNativeLambda.Arn
 
   DictionaryBucketName:
     Value: !Ref DictionaryBucket
