@@ -46,6 +46,11 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
 
+      NotificationConfiguration:
+        QueueConfigurations:
+          - Event: s3:ObjectCreated:*
+            Queue: !GetAtt CopyQueue.Arn
+
   DictionaryArtifactsBucket:
     Type: AWS::S3::Bucket
     Properties:
