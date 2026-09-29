@@ -132,6 +132,18 @@ Resources:
                   - s3:GetObject
                 Resource: !Sub ${DictionaryArtifactsBucket.Arn}/*
 
+        - PolicyName: DictionarySubscribeSQS
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: WriteLogs
+                Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource: "*"
+
   DictionaryTranslateLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -294,6 +306,14 @@ Resources:
 
       LoggingConfig:
         LogGroup: !Ref DictionaryCopyLambdaLogGroup
+
+  DictionaryCopyLambdaEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn: !GetAtt CopyQueue.Arn
+      FunctionName: !GetAtt DictionaryCopyLambda.Arn
+      BatchSize: 1
+      Enabled: true
 
 
   GitHubActionsLambdaPublish:
