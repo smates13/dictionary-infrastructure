@@ -3,6 +3,29 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Dictionary infrastructure
 
 Resources:
+  CopyQueue:
+    Type: AWS::SQS::Queue
+
+  CopyQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref CopyQueue
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt CopyQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt DictionaryBucket.Arn
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+
+
   DictionaryBucket:
     Type: AWS::S3::Bucket
     Properties:
